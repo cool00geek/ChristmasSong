@@ -68,12 +68,34 @@ public class MainActivity extends AppCompatActivity {
 
             SongPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 public void onCompletion(MediaPlayer mp) {
-                    int rand = (int)(Math.random() * songList.size());
                     try {
-                        SongPlayer.reset();
-                        SongPlayer.setDataSource(songList.get(rand).getAbsolutePath());
-                        SongPlayer.prepare();
-                        SongPlayer.start();
+                        MediaPlayer trainPlayer = new MediaPlayer();
+                        int random = (int)(Math.random() * trainList.size());
+                        trainPlayer.setDataSource(trainList.get(random).getAbsolutePath());
+                        trainPlayer.prepare();
+                        trainPlayer.start();
+                        trainPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                            @Override
+                            public void onCompletion(MediaPlayer mp) {
+                                SongPlayer.reset();
+                                int rand = (int)(Math.random() * songList.size());
+                                try {
+                                    SongPlayer.setDataSource(songList.get(rand).getAbsolutePath());
+                                    SongPlayer.prepare();
+                                } catch (IOException e) {
+                                    try {
+                                        SongPlayer.setDataSource(songList.get(rand).getAbsolutePath());
+                                        SongPlayer.prepare();
+                                    } catch (IOException e1) {
+                                        e1.printStackTrace();
+                                    }
+                                }
+                                SongPlayer.start();
+                                playBackgroundTrain(trainList);
+                            }
+                        });
+
+
                     } catch (IOException e) {
                         Log.e("Broke", e.getMessage());
                         e.printStackTrace();
@@ -82,14 +104,14 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-            try {
+            /*try {
                 if (SongPlayer.isPlaying() && trainList.size() != 0){
                     playBackgroundTrain(trainList);
 
                 }
             } catch (Exception e){
                 finish();
-            }
+            }*/
         }
     }
 
@@ -118,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onCompletion(MediaPlayer mp) {
                                 SongPlayer.setVolume(1, 1);
-                                playBackgroundTrain(trainList);
+                                //playBackgroundTrain(trainList);
                             }
                         });
                     }
